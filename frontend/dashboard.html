@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .quiz-item { border:1px solid #ccc; padding:10px; margin:10px 0; }
+        .question { margin: 15px 0; }
+        .options button { margin: 5px; }
+        #result-container { display:none; }
+        pre#debug-area { display:block; }
+    </style>
+</head>
+<body>
+    <h1>User Dashboard</h1>
+    <button id="logoutBtn">Logout</button>
+
+    <div id="quiz-container"></div>
+    <div id="result-container"></div>
+
+    <!-- Include shared JS -->
+    <script src="app.js"></script>
+</body>
+</html>

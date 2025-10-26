@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .quiz-card, .result-card { border:1px solid #ccc; padding:10px; margin:10px 0; }
+        .quiz-card button { margin-top:5px; }
+        #resultsContainer { margin-top: 30px; }
+        pre#debug-area { display:block; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <button id="logoutBtn">Logout</button>
+
+    <h2>Create Quiz</h2>
+    <form id="createQuizForm">
+        <input type="text" id="quizTitle" placeholder="Quiz Title" required>
+        <input type="text" id="quizDescription" placeholder="Description">
+        <button type="submit">Create Quiz</button>
+    </form>
+
+    <h2>Add Question to Quiz</h2>
+    <form id="addQuestionForm">
+        <select id="selectQuizForQuestion"></select><br><br>
+        <input type="text" id="questionText" placeholder="Question Text" required><br><br>
+        <input type="text" class="optText" placeholder="Option 1" required>
+        <input type="text" class="optText" placeholder="Option 2" required>
+        <input type="text" class="optText" placeholder="Option 3" required>
+        <input type="text" class="optText" placeholder="Option 4" required><br><br>
+        Correct Option: 
+        <label><input type="radio" name="correctOption" value="0" checked>1</label>
+        <label><input type="radio" name="correctOption" value="1">2</label>
+        <label><input type="radio" name="correctOption" value="2">3</label>
+        <label><input type="radio" name="correctOption" value="3">4</label><br><br>
+        <button type="submit">Add Question</button>
+    </form>
+
+    <h2>Existing Quizzes</h2>
+    <div id="quizzesContainer"></div>
+
+    <h2>Results</h2>
+    <div id="resultsContainer"></div>
+
+    <!-- Include shared JS -->
+    <script src="app.js"></script>
+</body>
+</html>
