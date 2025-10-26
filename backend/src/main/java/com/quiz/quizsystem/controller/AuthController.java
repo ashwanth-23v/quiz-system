@@ -32,7 +32,6 @@ public ResponseEntity<?> login(@RequestBody LoginRequest req) {
     try {
         AuthResponse resp = authService.login(req);
         System.out.println("✅ AuthService returned response. Token present: " + (resp.token() != null));
-        System.out.println("✅ Sending 200 OK response");
         return ResponseEntity.ok(resp);
     } catch (Exception ex) {
         System.out.println("===== LOGIN FAILED =====");

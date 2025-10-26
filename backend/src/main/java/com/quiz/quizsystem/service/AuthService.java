@@ -49,7 +49,6 @@ public class AuthService {
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
         
         System.out.println("User found: email=" + user.getEmail() + ", role=" + user.getRole());
-        System.out.println("About to generate token...");
         
         String token = tokenProvider.generateToken(user.getEmail(), user.getRole().name());
         

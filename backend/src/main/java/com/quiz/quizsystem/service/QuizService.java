@@ -108,8 +108,6 @@ public ResultDto submit(SubmitAnswerDto dto, String userEmail) {
         if (userOpt != null && userOpt.equals(correctId)) score++;
     }
 
-    System.out.println("🎯 Final score: " + score + "/" + total);
-
     // persist result
     Result r = new Result();
     r.setQuiz(quiz);
@@ -119,13 +117,13 @@ public ResultDto submit(SubmitAnswerDto dto, String userEmail) {
     Optional<User> userOpt = userRepository.findByEmail(userEmail);
     if (userOpt.isPresent()) {
         r.setUser(userOpt.get());
-        System.out.println("🎯 User found and set: " + userOpt.get().getEmail());
+        System.out.println(" User found and set: " + userOpt.get().getEmail());
     } else {
         System.out.println("❌ User NOT found for email: " + userEmail);
     }
     
     Result saved = resultRepository.save(r);
-    System.out.println("🎯 Result saved with ID: " + saved.getId());
+    System.out.println(" Result saved with ID: " + saved.getId());
 
     ResultDto rd = new ResultDto();
     rd.setScore(score);

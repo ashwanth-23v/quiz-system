@@ -34,9 +34,7 @@ public class AdminController {
     }
 
 @PostMapping("/quizzes/{quizId}/questions")
-public Question addQuestion(@PathVariable Long quizId, @RequestBody Map<String, Object> body) {
-    System.out.println("🎯🎯🎯 ADD QUESTION METHOD REACHED! QuizId=" + quizId + " | Auth=" + SecurityContextHolder.getContext().getAuthentication());
-    
+public Question addQuestion(@PathVariable Long quizId, @RequestBody Map<String, Object> body) {    
     var options = (List<Map<String, Object>>) body.get("options");
     String questionText = (String) body.get("text");
     return adminService.addQuestion(quizId, questionText, options);
@@ -46,7 +44,6 @@ public Question addQuestion(@PathVariable Long quizId, @RequestBody Map<String, 
 public List<Result> allResults() {
     System.out.println("🔍 getAllResults called");
     List<Result> results = adminService.getAllResults();
-    System.out.println("🔍 Found " + results.size() + " results");
     return results;
 }
 
