@@ -1,17 +1,92 @@
+// app.js — your original code with debug-toggle + inline SVG icons added
+// ==================== SVG ICONS (inline, offline) ====================
+(function injectSvgSprite() {
+    if (document.getElementById('__svg_sprite')) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('id', '__svg_sprite');
+    svg.setAttribute('style', 'display:none;');
+    svg.innerHTML = `
+      <symbol id="icon-logout" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/>
+      </symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </symbol>
+      <symbol id="icon-back" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </symbol>
+    `;
+    document.body.prepend(svg);
+})();
+
 // ==================== SHARED HELPERS ====================
 
-// Debug area for development
+// Debug area for development (updated to support toggle)
 function ensureDebugArea() {
     let dbg = document.getElementById('debug-area');
     if (!dbg) {
         dbg = document.createElement('pre');
         dbg.id = 'debug-area';
         dbg.style = 'background:#f4f4f4;border:1px solid #ddd;padding:8px;margin:8px;white-space:pre-wrap;max-height:200px;overflow:auto;font-size:12px;';
-        document.body.insertBefore(dbg, document.body.firstChild);
+        // insert at top of body so it's visible
+        const container = document.body;
+        container.insertBefore(dbg, container.firstChild);
+    }
+    // visibility controlled by persisted setting
+    const visible = localStorage.getItem('debugVisible') === 'true';
+    dbg.style.display = visible ? 'block' : 'none';
+}
+
+// create floating toggle button (top-right)
+function ensureDebugToggle() {
+    if (document.getElementById('debug-toggle')) return;
+    const btn = document.createElement('button');
+    btn.id = 'debug-toggle';
+    btn.title = 'Toggle debug area';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.style = `
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 9999;
+        width:40px;
+        height:40px;
+        border-radius:10px;
+        border: none;
+        background: linear-gradient(90deg,#60a5fa,#6ee7b7);
+        box-shadow: 0 8px 20px rgba(2,6,23,0.5);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+    `;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><use href="#icon-plus" fill="#04202a"></use></svg>`;
+    btn.addEventListener('click', () => {
+        const dbg = document.getElementById('debug-area');
+        if (!dbg) return;
+        const now = dbg.style.display !== 'block';
+        dbg.style.display = now ? 'block' : 'none';
+        localStorage.setItem('debugVisible', now ? 'true' : 'false');
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        // adjust icon to back/plus for clarity
+        btn.innerHTML = now
+            ? `<svg width="18" height="18" viewBox="0 0 24 24"><use href="#icon-back" fill="#04202a"></use></svg>`
+            : `<svg width="18" height="18" viewBox="0 0 24 24"><use href="#icon-plus" fill="#04202a"></use></svg>`;
+    });
+    document.body.appendChild(btn);
+
+    // set initial pressed state & icon
+    const initVisible = localStorage.getItem('debugVisible') === 'true';
+    if (initVisible) {
+        btn.setAttribute('aria-pressed', 'true');
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24"><use href="#icon-back" fill="#04202a"></use></svg>`;
     }
 }
+
 function debugPrint(obj) {
     ensureDebugArea();
+    ensureDebugToggle();
     const dbg = document.getElementById('debug-area');
     try {
         dbg.textContent = (typeof obj === 'string') ? obj : JSON.stringify(obj, null, 2);
@@ -20,7 +95,31 @@ function debugPrint(obj) {
     }
 }
 
-// API fetch helper with token
+// ==================== ICON HELPERS ====================
+// Adds small inline icons to specific buttons (non-destructive)
+function decorateButtonsWithIcons() {
+    // logoutBtn: keep id, just insert icon at start
+    const logout = document.getElementById('logoutBtn');
+    if (logout && !logout.dataset.iconInjected) {
+        const existing = logout.innerHTML;
+        logout.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" style="margin-right:6px;vertical-align:middle;"><use href="#icon-logout" fill="currentColor"></use></svg>${existing}`;
+        logout.dataset.iconInjected = '1';
+    }
+
+    // Add small plus icon to Create Quiz and Add Question submit buttons where present
+    document.querySelectorAll('form button[type="submit"]').forEach(btn => {
+        if (!btn.dataset.iconInjected) {
+            // do not modify login/signup buttons (these should be left as-is for clarity)
+            const formId = btn.closest('form')?.id || '';
+            if (formId === 'loginForm' || formId === 'signupForm') return;
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" style="margin-right:6px;vertical-align:middle;"><use href="#icon-plus" fill="currentColor"></use></svg>${btn.innerHTML}`;
+            btn.dataset.iconInjected = '1';
+        }
+    });
+}
+
+// ==================== API / AUTH HELPERS (unchanged) ====================
+
 const API_BASE = "http://localhost:8080";
 async function apiFetch(path, opts = {}) {
     const token = localStorage.getItem('token');
@@ -67,6 +166,7 @@ async function login(event) {
     } catch (err) {
         console.error(err);
         if (errorMsg) errorMsg.textContent = err.message || "Login failed";
+        debugPrint({ loginError: err.message || String(err) });
     }
 }
 const loginForm = document.getElementById('loginForm');
@@ -102,7 +202,11 @@ if (signupForm) signupForm.addEventListener('submit', signup);
 // ==================== ROLE-BASED INIT ====================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // ensure debug area & toggle (toggle uses persisted choice)
     ensureDebugArea();
+    ensureDebugToggle();
+    decorateButtonsWithIcons();
+
     const role = (localStorage.getItem('role') || '').toUpperCase();
     const token = localStorage.getItem('token');
     if (!token) {
@@ -162,42 +266,51 @@ async function startQuiz(quizId) {
         quizContainer.innerHTML = questions.map(q => `
             <div class="question" id="question-${q.id}">
                 <p>${q.text}</p>
-                <div>${q.options.map(o => `<button onclick="answerQuestion(${q.id}, ${o.id})">${o.text}</button>`).join('')}</div>
+                <div class="options">
+                    ${q.options.map(o => `<button type="button" onclick="answerQuestion(${q.id}, ${o.id})">${o.text}</button>`).join('')}
+                </div>
             </div>
-        `).join('') + `<button onclick="submitQuiz()">Submit Quiz</button>`;
+        `).join('') + `<div style="text-align:right;"><button type="button" onclick="submitQuiz()" class="submitQuizBtn">Submit Quiz</button></div>`;
     } catch (err) {
         console.error(err);
         debugPrint({ startQuizError: err.message });
     }
 }
 
+
 function answerQuestion(questionId, optionId) {
     userAnswers[questionId] = optionId;
-    const buttons = document.querySelectorAll(`#question-${questionId} button`);
-    buttons.forEach(b => b.disabled = true);
+    const buttons = document.querySelectorAll(`#question-${questionId} .options button`);
+    buttons.forEach(b => {
+        const bOptionId = parseInt(b.getAttribute('onclick')?.match(/\d+/g)[1]);
+        if (bOptionId === optionId) b.classList.add('selected');
+        else b.classList.remove('selected');
+    });
 }
+
+
 
 async function submitQuiz() {
     try {
         console.log('🎯 Submitting quiz:', currentQuiz.id);
         console.log('🎯 Answers:', userAnswers);
-        
+
         const result = await apiFetch('/api/user/quizzes/submit', {  // ✅ Changed endpoint
             method: 'POST',
             body: JSON.stringify({ quizId: currentQuiz.id, answers: userAnswers })
         });
-        
+
         console.log('🎯 Result received:', result);
-        
+
         const quizContainer = document.getElementById("quiz-container");
         const resultContainer = document.getElementById("result-container");
-        
+
         quizContainer.style.display = 'none';
         resultContainer.style.display = 'block';
         resultContainer.innerHTML = `
             <h2>Quiz Result</h2>
             <p>Score: ${result.score}/${result.total}</p>
-            <button onclick="backToQuizzes()">Back to Quizzes</button>
+            <button onclick="backToQuizzes()"><svg width="14" height="14" viewBox="0 0 24 24" style="margin-right:6px;vertical-align:middle;"><use href="#icon-back" fill="currentColor"></use></svg>Back to Quizzes</button>
         `;
     } catch(err) {
         console.error('❌ Submit error:', err);
@@ -205,14 +318,13 @@ async function submitQuiz() {
     }
 }
 
-// Add this new function
 function backToQuizzes() {
     const quizContainer = document.getElementById("quiz-container");
     const resultContainer = document.getElementById("result-container");
-    
+
     resultContainer.style.display = 'none';
     quizContainer.style.display = 'block';
-    
+
     loadQuizzes(); // Reload the quiz list
 }
 
@@ -290,13 +402,9 @@ document.getElementById('addQuestionForm')?.addEventListener('submit', async e =
     document.getElementById('questionText').value = '';
 });
 
-
 async function loadResults() {
     try {
-        console.log('🔍 Loading results...');
         const results = await apiFetch('/api/admin/results');
-        console.log('🔍 Results received:', results);
-        
         const container = document.getElementById('resultsContainer');
         if (!results || results.length === 0) { 
             container.innerHTML = '<p>No results yet</p>'; 
@@ -304,30 +412,48 @@ async function loadResults() {
         }
         
         container.innerHTML = results.map(r => {
-            // Handle different possible field structures
             const userEmail = r.user?.email || 'N/A';
             const quizTitle = r.quiz?.title || 'N/A';
             const score = r.score || 0;
             const total = r.totalQuestions || 0;
             const takenAt = r.takenAt ? new Date(r.takenAt).toLocaleString() : 'N/A';
-            
-            console.log('Mapping result:', { userEmail, quizTitle, score, total, takenAt });
-            
+            const resultId = r.id; // ensure your API sends unique id
+
             return `
-                <div class="result-card">
+                <div class="result-card" data-id="${resultId}">
                     <strong>User:</strong> ${escapeHtml(userEmail)}<br/>
                     <strong>Quiz:</strong> ${escapeHtml(quizTitle)}<br/>
                     <strong>Score:</strong> ${score}/${total}<br/>
-                    <small>${takenAt}</small>
+                    <small>${takenAt}</small><br/>
+                    <button type="button" class="deleteResultBtn">Delete</button>
                 </div>
             `;
         }).join('');
+
+        // Attach delete handlers
+        document.querySelectorAll('.deleteResultBtn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                const card = e.target.closest('.result-card');
+                const id = card.dataset.id;
+                if (!id || !confirm('Delete this result?')) return;
+                try {
+                    await apiFetch(`/api/admin/results/${encodeURIComponent(id)}`, { method: 'DELETE' });
+                    card.remove(); // remove from DOM instantly
+                    debugPrint(`Result ${id} deleted`);
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed to delete result: ' + err.message);
+                }
+            });
+        });
+
     } catch(err) { 
         console.error('❌ Error loading results:', err);
         const container = document.getElementById('resultsContainer');
         container.innerHTML = '<p style="color:red;">Error loading results: ' + err.message + '</p>';
     }
 }
+
 
 // Logout button
 document.getElementById('logoutBtn')?.addEventListener('click', ()=>{

@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>User Dashboard</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .quiz-item { border:1px solid #ccc; padding:10px; margin:10px 0; }
-        .question { margin: 15px 0; }
-        .options button { margin: 5px; }
-        #result-container { display:none; }
-        pre#debug-area { display:block; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz System — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>User Dashboard</h1>
-    <button id="logoutBtn">Logout</button>
+  <div class="container">
+    <div class="header">
+      <div class="title">Quizzes</div>
+      <div class="controls">
+        <div class="meta">Signed in</div>
+        <button id="logoutBtn" class="small button-ghost">Logout</button>
+      </div>
+    </div>
 
-    <div id="quiz-container"></div>
-    <div id="result-container"></div>
+    <div class="card">
+      <div id="quiz-container" class="quiz-list"></div>
 
-    <!-- Include shared JS -->
-    <script src="app.js"></script>
+      <div id="result-container" class="result-container" style="display:none; margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>

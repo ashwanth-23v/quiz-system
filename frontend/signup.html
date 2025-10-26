@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz System - Signup</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz System — Sign up</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="login-container">
-        <h2>Signup</h2>
-        <form id="signupForm">
-            <input type="email" id="signupEmail" placeholder="Email" required>
-            <input type="password" id="signupPassword" placeholder="Password" required>
-            <select id="role" required>
-                <option value="" disabled selected>Select Role</option>
-                <option value="USER">User</option>
-                <option value="ADMIN">Admin</option>
-            </select>
-            <button type="submit">Signup</button>
-        </form>
-        <p id="signupError" class="error-msg"></p>
-        <p>Already have an account? <a href="index.html">Login here</a></p>
-    </div>
+  <div class="container">
+    <div class="login-container card">
+      <h2>Create account</h2>
+      <p class="hint">Register as a user or admin for testing</p>
 
-    <script src="app.js"></script>
+      <form id="signupForm" aria-label="Signup form">
+        <input type="email" id="signupEmail" placeholder="Email" required />
+        <input type="password" id="signupPassword" placeholder="Password" required />
+        <select id="role" required>
+          <option value="" disabled selected>Select role</option>
+          <option value="USER">User</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+        <button type="submit">Sign up</button>
+      </form>
+
+      <p id="signupError" class="error-msg"></p>
+      <p class="hint">Already registered? <a class="link" href="index.html">Sign in</a></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>

@@ -1,50 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .quiz-card, .result-card { border:1px solid #ccc; padding:10px; margin:10px 0; }
-        .quiz-card button { margin-top:5px; }
-        #resultsContainer { margin-top: 30px; }
-        pre#debug-area { display:block; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz System — Admin</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <button id="logoutBtn">Logout</button>
+  <div class="container">
+    <div class="header" style="margin-bottom:18px;">
+      <div class="title">Admin Panel</div>
+      <div class="controls">
+        <div class="meta">Admin</div>
+        <button id="logoutBtn" class="small button-ghost">Logout</button>
+      </div>
+    </div>
 
-    <h2>Create Quiz</h2>
-    <form id="createQuizForm">
-        <input type="text" id="quizTitle" placeholder="Quiz Title" required>
-        <input type="text" id="quizDescription" placeholder="Description">
-        <button type="submit">Create Quiz</button>
-    </form>
+    <div class="admin-grid">
+      <!-- main column -->
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="margin-top:0">Create Quiz</h3>
+          <form id="createQuizForm">
+            <input type="text" id="quizTitle" placeholder="Quiz title" required />
+            <input type="text" id="quizDescription" placeholder="Short description" />
+            <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+              <button type="submit">Create Quiz</button>
+            </div>
+          </form>
+        </div>
 
-    <h2>Add Question to Quiz</h2>
-    <form id="addQuestionForm">
-        <select id="selectQuizForQuestion"></select><br><br>
-        <input type="text" id="questionText" placeholder="Question Text" required><br><br>
-        <input type="text" class="optText" placeholder="Option 1" required>
-        <input type="text" class="optText" placeholder="Option 2" required>
-        <input type="text" class="optText" placeholder="Option 3" required>
-        <input type="text" class="optText" placeholder="Option 4" required><br><br>
-        Correct Option: 
-        <label><input type="radio" name="correctOption" value="0" checked>1</label>
-        <label><input type="radio" name="correctOption" value="1">2</label>
-        <label><input type="radio" name="correctOption" value="2">3</label>
-        <label><input type="radio" name="correctOption" value="3">4</label><br><br>
-        <button type="submit">Add Question</button>
-    </form>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="margin-top:0">Add Question</h3>
+          <form id="addQuestionForm">
+            <select id="selectQuizForQuestion"></select>
+            <div style="height:10px"></div>
+            <input type="text" id="questionText" placeholder="Question text" required />
+            <div style="height:8px"></div>
+            <input class="optText" type="text" placeholder="Option 1" required />
+            <input class="optText" type="text" placeholder="Option 2" required />
+            <input class="optText" type="text" placeholder="Option 3" required />
+            <input class="optText" type="text" placeholder="Option 4" required />
+            <div style="margin-top:8px;" class="hint">Correct option:
+              <label><input type="radio" name="correctOption" value="0" checked>1</label>
+              <label><input type="radio" name="correctOption" value="1">2</label>
+              <label><input type="radio" name="correctOption" value="2">3</label>
+              <label><input type="radio" name="correctOption" value="3">4</label>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+              <button type="submit">Add Question</button>
+            </div>
+          </form>
+        </div>
 
-    <h2>Existing Quizzes</h2>
-    <div id="quizzesContainer"></div>
+        <div class="card">
+          <h3 style="margin-top:0">Existing Quizzes</h3>
+          <div id="quizzesContainer"></div>
+        </div>
+      </div>
 
-    <h2>Results</h2>
-    <div id="resultsContainer"></div>
+      <!-- side column -->
+      <aside class="admin-side">
+        <div class="card">
+          <h4 style="margin-top:0">Results</h4>
+          <div id="resultsContainer"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
 
-    <!-- Include shared JS -->
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
